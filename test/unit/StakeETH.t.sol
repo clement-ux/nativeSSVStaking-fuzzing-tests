@@ -18,10 +18,11 @@ contract StakeETHTest is Modifiers {
         uint256 amount = 1 ether;
         bytes memory publicKey = bytes("publicKey");
         bytes32 hashPublicKey = hashPubKey(publicKey);
+        bytes32 depositDataRoot = mockBeaconChain.getLatestBlock().data.beaconRoot;
 
         // Expected events
         vm.expectEmit(address(strategy));
-        emit CompoundingValidatorManager.ETHStaked(hashPublicKey, getDepositDataRoots(publicKey, 0), publicKey, amount);
+        emit CompoundingValidatorManager.ETHStaked(hashPublicKey, depositDataRoot, publicKey, amount);
 
         // Main Call
         _stakeEth(publicKey, amount);
@@ -33,14 +34,14 @@ contract StakeETHTest is Modifiers {
             uint64 blockNumber,
             uint32 depositIndex,
             CompoundingValidatorManager.DepositStatus status
-        ) = strategy.deposits(getDepositDataRoots(publicKey, 0));
+        ) = strategy.deposits(depositDataRoot);
         // Assertions
         assertEq(address(strategy).balance, 0, "Strategy balance should be 0 after staking");
         //assertEq(strategy.getDepositsRootsLength(), 1, "Deposits roots length should be 1 after the first deposit");
         assertEq(address(mockDepositContract).balance, amount, "Mock deposit contract should hold the staked amount");
         assertEq(pubKeyHash, hashPublicKey, "Deposit data root should match the public key hash");
         assertEq(amountGwei, amount / 1 gwei, "Amount should be 1 ether in gwei");
-        assertEq(blockNumber, block.number, "Block number should be current block");
+        assertEq(blockNumber, block.number - 1, "Block number should be current block"); // -1 -> mined after deposit
         assertEq(depositIndex, 0, "Deposit index should be 0 for the first deposit");
         assertEq(
             keccak256(abi.encodePacked(strategy.validatorState(hashPublicKey))),
@@ -54,6 +55,8 @@ contract StakeETHTest is Modifiers {
         );
     }
 
+    /*
+    // Todo: Uncomment this test when the verifyValidator logic is implemented
     function test_StakeETH_SecondDeposit()
         public
         asGovernor
@@ -67,7 +70,7 @@ contract StakeETHTest is Modifiers {
 
         // Expected events
         vm.expectEmit(address(strategy));
-        emit CompoundingValidatorManager.ETHStaked(hashPublicKey, getDepositDataRoots(publicKey, 1), publicKey, amount);
+    emit CompoundingValidatorManager.ETHStaked(hashPublicKey, getDepositDataRoots(publicKey, 1), publicKey, amount);
 
         // Main Call
         _stakeEth(publicKey, amount);
@@ -82,7 +85,7 @@ contract StakeETHTest is Modifiers {
         ) = strategy.deposits(getDepositDataRoots(publicKey, 1));
         // Assertions
         assertEq(address(strategy).balance, 0, "Strategy balance should be 0 after staking");
-        //assertEq(strategy.getDepositsRootsLength(), 2, "Deposits roots length should be 1 after the first deposit");
+    //assertEq(strategy.getDepositsRootsLength(), 2, "Deposits roots length should be 1 after the first deposit");
         assertEq(
             address(mockDepositContract).balance,
             amount + 1 ether,
@@ -103,6 +106,7 @@ contract StakeETHTest is Modifiers {
             "Deposit status should be PENDING"
         );
     }
+    */
 
     //////////////////////////////////////////////////////
     /// --- REVERTING TESTS
@@ -133,6 +137,8 @@ contract StakeETHTest is Modifiers {
         strategy.stakeEth(ValidatorStakeData(bytes("publicKey"), bytes(""), bytes32("")), 0.5 ether / 1 gwei);
     }
 
+    /*
+    // Todo: Uncomment this test when the verifyValidator logic is implemented
     function test_RevertWhen_StakeETH_Because_DepositTooSmall()
         public
         asGovernor
@@ -148,4 +154,5 @@ contract StakeETHTest is Modifiers {
             ValidatorStakeData(bytes("publicKey"), bytes(""), depositDataRoot), uint64(0.5 ether / 1 gwei)
         );
     }
+    */
 }

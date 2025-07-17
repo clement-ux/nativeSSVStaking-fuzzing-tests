@@ -1,12 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity 0.8.29;
 
-import { MockBeaconChain } from "test/mocks/MockBeaconChain.sol";
-
 contract MockSSVNetwork {
     mapping(bytes => bool) public isRegisteredValidator;
-
-    MockBeaconChain public beaconChain;
 
     struct Cluster {
         uint32 validatorCount;
@@ -14,12 +10,6 @@ contract MockSSVNetwork {
         uint64 index;
         bool active;
         uint256 balance;
-    }
-
-    function setBeaconChain(
-        address _beaconChain
-    ) external {
-        beaconChain = MockBeaconChain(_beaconChain);
     }
 
     function registerValidator(
@@ -30,11 +20,6 @@ contract MockSSVNetwork {
         Cluster memory cluster
     ) external {
         isRegisteredValidator[publicKey] = true;
-
-        // Register the validator in the mock beacon chain
-        beaconChain.addValidator(sha256(abi.encodePacked(publicKey, bytes16(0))));
-        // Mine a new block to simulate the registration
-        beaconChain.mine(); // Simulate a block to register the validator
 
         // Silent unused variable warnings
         operatorIds;

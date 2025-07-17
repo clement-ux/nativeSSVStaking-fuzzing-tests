@@ -92,7 +92,7 @@ abstract contract Setup is Base {
         mockBeaconChain = new MockBeaconChain();
         mockBeaconProofs = new MockBeaconProofs();
         mockBeaconOracle = new MockBeaconOracle();
-        mockDepositContract = new MockDepositContract();
+        mockDepositContract = new MockDepositContract(mockBeaconChain);
         mockBeaconRootAddress = new MockBeaconRootAddress();
         mockWithdrawalRequest = new MockWithdrawalRequest();
         mockConsolidationStrategy = new MockConsolidationStrategy();
@@ -171,7 +171,6 @@ abstract contract Setup is Base {
         mockBeaconRootAddress.setBeaconChain(address(mockBeaconChain));
         mockBeaconOracle.setBeaconProofs(address(mockBeaconProofs));
         mockBeaconProofs.setBeaconChain(mockBeaconChain);
-        mockSsvNetwork.setBeaconChain(address(mockBeaconChain));
         for (uint256 i; i < 10; i++) {
             mockBeaconChain.mine(); // Mine a few blocks to initialize the mock beacon chain
         }

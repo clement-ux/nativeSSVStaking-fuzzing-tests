@@ -71,13 +71,17 @@ abstract contract Modifiers is Helpers {
         bytes memory publicKey
     ) internal {
         strategy.registerSsvValidator(publicKey, new uint64[](0), bytes(""), 1 ether, Cluster(0, 0, 0, true, 1 ether));
+        // Register the validator in the mock beacon chain
+        mockBeaconChain.addValidator(sha256(abi.encodePacked(publicKey, bytes16(0))));
+        // Mine a new block to simulate the registration
+        mockBeaconChain.mine(); // Simulate a block to register the validator
     }
 
     function _stakeEth(bytes memory publicKey, uint256 amount) internal {
         deal(address(weth), address(strategy), amount);
-        strategy.stakeEth(
-            ValidatorStakeData(publicKey, bytes(""), generateDepositDataRoots(publicKey)), (amount / 1 gwei).toUint64()
-        );
+        bytes32 depositDataRoot = mockBeaconChain.getLatestBlock().data.beaconRoot;
+        strategy.stakeEth(ValidatorStakeData(publicKey, bytes(""), depositDataRoot), (amount / 1 gwei).toUint64());
+        mockBeaconChain.mine(); // Simulate a block to register the validator
     }
 
     function _verifyValidator(bytes memory publicKey, uint64 validatorIndex) internal {

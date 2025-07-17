@@ -228,6 +228,13 @@ contract MockBeaconChain {
         return blocks[blocks.length - 1];
     }
 
+    function getBlock(
+        uint256 index
+    ) external view returns (Block memory) {
+        require(index < blocks.length, "Index out of bounds");
+        return blocks[index];
+    }
+
     //////////////////////////////////////////////////////
     /// --- HELPERS
     //////////////////////////////////////////////////////
