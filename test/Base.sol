@@ -17,7 +17,6 @@ import { CompoundingStakingSSVStrategyProxy } from "@origin-dollar/proxies/Proxi
 // Mocks
 import { MockSSVNetwork } from "test/mocks/MockSSVNetwork.sol";
 import { MockBeaconChain } from "test/mocks/MockBeaconChain.sol";
-import { MockBeaconRoots } from "test/mocks/MockBeaconRoots.sol";
 import { MockBeaconProofs } from "test/mocks/MockBeaconProofs.sol";
 import { MockDepositContract } from "test/mocks/MockDepositContract.sol";
 import { MockBeaconRootAddress } from "test/mocks/MockBeaconRootAddress.sol";
@@ -46,7 +45,6 @@ abstract contract Base is Test {
     // Mocks
     MockSSVNetwork public mockSsvNetwork;
     MockBeaconChain public mockBeaconChain;
-    MockBeaconRoots public mockBeaconRoots;
     MockBeaconProofs public mockBeaconProofs;
     MockDepositContract public mockDepositContract;
     MockBeaconRootAddress public mockBeaconRootAddress;

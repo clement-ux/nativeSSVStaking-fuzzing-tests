@@ -18,7 +18,6 @@ import { WETH } from "@solmate/tokens/WETH.sol";
 import { MockERC20 } from "@solmate/test/utils/mocks/MockERC20.sol";
 import { MockBeaconChain } from "test/mocks/MockBeaconChain.sol";
 import { MockSSVNetwork } from "test/mocks/MockSSVNetwork.sol";
-import { MockBeaconRoots } from "test/mocks/MockBeaconRoots.sol";
 import { MockBeaconProofs } from "test/mocks/MockBeaconProofs.sol";
 import { MockDepositContract } from "test/mocks/MockDepositContract.sol";
 import { MockBeaconRootAddress } from "test/mocks/MockBeaconRootAddress.sol";
@@ -91,7 +90,6 @@ abstract contract Setup is Base {
         // Deploy mocks
         mockSsvNetwork = new MockSSVNetwork();
         mockBeaconChain = new MockBeaconChain();
-        mockBeaconRoots = new MockBeaconRoots();
         mockBeaconProofs = new MockBeaconProofs();
         mockDepositContract = new MockDepositContract();
         mockBeaconRootAddress = new MockBeaconRootAddress();
@@ -110,7 +108,6 @@ abstract contract Setup is Base {
         vm.label(address(ssv), "SSV");
         vm.label(address(mockSsvNetwork), "Mock SSVNetwork");
         vm.label(address(mockBeaconChain), "Mock Beacon Chain");
-        vm.label(address(mockBeaconRoots), "Mock Beacon Roots");
         vm.label(address(mockBeaconProofs), "Mock Beacon Proofs");
         vm.label(address(mockDepositContract), "Mock Deposit Contract");
         vm.label(address(mockWithdrawalRequest), "Mock Withdrawal Request");
