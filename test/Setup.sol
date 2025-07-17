@@ -171,6 +171,7 @@ abstract contract Setup is Base {
         mockBeaconRootAddress.setBeaconChain(address(mockBeaconChain));
         mockBeaconOracle.setBeaconProofs(address(mockBeaconProofs));
         mockBeaconProofs.setBeaconChain(mockBeaconChain);
+        mockSsvNetwork.setBeaconChain(address(mockBeaconChain));
         for (uint256 i; i < 10; i++) {
             mockBeaconChain.mine(); // Mine a few blocks to initialize the mock beacon chain
         }

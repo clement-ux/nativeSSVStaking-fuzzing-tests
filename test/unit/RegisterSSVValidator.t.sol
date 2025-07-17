@@ -26,6 +26,11 @@ contract RegisterSSVValidatorTest is Modifiers {
             keccak256(abi.encodePacked(CompoundingValidatorManager.VALIDATOR_STATE.REGISTERED)),
             "Validator should be registered"
         );
+        assertEq(
+            mockBeaconChain.getLatestBlock().validatorPubKeyHashes[0],
+            hashPublicKey,
+            "Validator public key hash should match"
+        );
     }
 
     //////////////////////////////////////////////////////

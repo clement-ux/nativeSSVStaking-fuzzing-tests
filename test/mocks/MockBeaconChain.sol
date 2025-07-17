@@ -223,6 +223,11 @@ contract MockBeaconChain {
         return pendingDeposits.length;
     }
 
+    function getLatestBlock() external view returns (Block memory) {
+        require(blocks.length > 0, "No blocks available");
+        return blocks[blocks.length - 1];
+    }
+
     //////////////////////////////////////////////////////
     /// --- HELPERS
     //////////////////////////////////////////////////////
