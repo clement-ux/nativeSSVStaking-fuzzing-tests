@@ -5,7 +5,6 @@ pragma solidity 0.8.29;
 import { Base } from "test/Base.sol";
 
 // Origin Dollar
-import { BeaconOracle } from "@origin-dollar/beacon/BeaconOracle.sol";
 import { InitializableAbstractStrategy } from "@origin-dollar/utils/InitializableAbstractStrategy.sol";
 import { CompoundingStakingSSVStrategy } from
     "@origin-dollar/strategies/NativeStaking/CompoundingStakingSSVStrategy.sol";
@@ -18,6 +17,7 @@ import { WETH } from "@solmate/tokens/WETH.sol";
 import { MockERC20 } from "@solmate/test/utils/mocks/MockERC20.sol";
 import { MockBeaconChain } from "test/mocks/MockBeaconChain.sol";
 import { MockSSVNetwork } from "test/mocks/MockSSVNetwork.sol";
+import { MockBeaconOracle } from "test/mocks/MockBeaconOracle.sol";
 import { MockBeaconProofs } from "test/mocks/MockBeaconProofs.sol";
 import { MockDepositContract } from "test/mocks/MockDepositContract.sol";
 import { MockBeaconRootAddress } from "test/mocks/MockBeaconRootAddress.sol";
@@ -91,6 +91,7 @@ abstract contract Setup is Base {
         mockSsvNetwork = new MockSSVNetwork();
         mockBeaconChain = new MockBeaconChain();
         mockBeaconProofs = new MockBeaconProofs();
+        mockBeaconOracle = new MockBeaconOracle();
         mockDepositContract = new MockDepositContract();
         mockBeaconRootAddress = new MockBeaconRootAddress();
         mockWithdrawalRequest = new MockWithdrawalRequest();
@@ -113,6 +114,9 @@ abstract contract Setup is Base {
         vm.label(address(mockWithdrawalRequest), "Mock Withdrawal Request");
         vm.label(address(mockConsolidationStrategy), "Mock Consolidation Strategy");
         vm.label(vault, "Vault");
+        vm.label(address(mockBeaconRootAddress), "Mock Beacon Root Address");
+        vm.label(address(mockBeaconOracle), "Mock Beacon Oracle");
+        vm.label(BEACON_ROOTS_ADDRESS, "Beacon Roots Address");
     }
 
     //////////////////////////////////////////////////////
@@ -120,8 +124,6 @@ abstract contract Setup is Base {
     //////////////////////////////////////////////////////
     function _deployContracts() internal {
         vm.startPrank(deployer);
-
-        beaconOracle = new BeaconOracle();
 
         // Deploy the Compounding Staking SSV Strategy proxy
         proxy = new CompoundingStakingSSVStrategyProxy();
@@ -133,7 +135,7 @@ abstract contract Setup is Base {
             _ssvToken: address(ssv),
             _ssvNetwork: address(mockSsvNetwork),
             _beaconChainDepositContract: address(mockDepositContract),
-            _beaconOracle: address(beaconOracle),
+            _beaconOracle: address(mockBeaconOracle),
             _beaconProofs: address(mockBeaconProofs)
         });
 
@@ -167,7 +169,10 @@ abstract contract Setup is Base {
         vm.deal(address(weth), 1_000_000_000 ether);
 
         mockBeaconRootAddress.setBeaconChain(address(mockBeaconChain));
-        mockBeaconChain.mine(); // Mine a block to initialize the mock beacon chain
-        mockBeaconChain.mine(); // Mine another block to ensure the chain is ready for tests
+        mockBeaconOracle.setBeaconProofs(address(mockBeaconProofs));
+        mockBeaconProofs.setBeaconChain(mockBeaconChain);
+        for (uint256 i; i < 10; i++) {
+            mockBeaconChain.mine(); // Mine a few blocks to initialize the mock beacon chain
+        }
     }
 }

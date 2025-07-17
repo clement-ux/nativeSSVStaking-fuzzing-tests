@@ -17,13 +17,13 @@ contract MockBeaconOracle {
 
     event BlockToSlot(bytes32 indexed blockRoot, uint64 indexed blockNumber, uint64 indexed slot);
 
-    address public beaconProof;
+    address public beaconProofs;
 
     function setBeaconProofs(
-        address beaconProofs
+        address _beaconProofs
     ) external {
-        require(beaconProofs != address(0), "Invalid address");
-        beaconProof = beaconProofs;
+        require(_beaconProofs != address(0), "Invalid address");
+        beaconProofs = _beaconProofs;
     }
 
     /// @notice Uses merkle a proof against the beacon block root to link
@@ -47,10 +47,10 @@ contract MockBeaconOracle {
         blockRoot = BeaconRoots.parentBlockRoot(nextBlockTimestamp);
 
         // Verify the slot to the beacon block root
-        MockBeaconProofs(beaconProof).verifySlot(blockRoot, slot, slotProof);
+        MockBeaconProofs(beaconProofs).verifySlot(blockRoot, slot, slotProof);
 
         // Verify the block number to the beacon block root
-        MockBeaconProofs(beaconProof).verifyBlockNumber(blockRoot, blockNumber, blockProof);
+        MockBeaconProofs(beaconProofs).verifyBlockNumber(blockRoot, blockNumber, blockProof);
 
         // Store mappings
         _blockToSlot[blockNumber] = slot;

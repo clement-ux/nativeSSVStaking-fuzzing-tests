@@ -70,6 +70,12 @@ contract MockBeaconChain {
     mapping(uint256 => Block) public blockBySlot;
 
     //////////////////////////////////////////////////////
+    /// --- EVENTS
+    //////////////////////////////////////////////////////
+    event SlotProcessed(uint256 slot);
+    event BlockRegistered(Block block);
+
+    //////////////////////////////////////////////////////
     /// --- BEACON CHAIN FUNCTIONS
     //////////////////////////////////////////////////////
     function mine() public {
@@ -103,7 +109,7 @@ contract MockBeaconChain {
             newBlockData.hash = keccak256(abi.encodePacked(block.number, block.timestamp));
             newBlockData.beaconRoot = keccak256(abi.encodePacked(newBlockData.slot, block.timestamp));
             newBlockData.parentHash = lastBlock.data.hash; // Previous block's hash
-            newBlockData.parentRoot = lastBlock.data.hash; // Previous block's root
+            newBlockData.parentRoot = lastBlock.data.beaconRoot; // Previous block's root
 
             // Push all to the new block
             newBlock.data = newBlockData;
@@ -126,10 +132,20 @@ contract MockBeaconChain {
         blockByTimestamp[uint64(block.timestamp)] = blocks[len - 1];
         blockByRoot[blocks[len - 1].data.beaconRoot] = blocks[len - 1];
 
+        emit BlockRegistered(blocks[len - 1]);
+
         // Increase block timestamp and number
         vm.warp(block.timestamp + TIME_BETWEEN_BLOCKS);
         vm.roll(block.number + 1);
         slot++;
+        emit SlotProcessed(slot);
+    }
+
+    function processEmptySlot() external {
+        // This function is used to process an empty slot, i.e. a slot where no block was proposed.
+        // It simply increases the slot number without creating a new block.
+        slot++;
+        emit SlotProcessed(slot);
     }
 
     function queueDeposit(uint256 amount, bytes32 pubKeyHash) external {
