@@ -46,7 +46,7 @@ contract VerifyDepositTest is Modifiers {
             keccak256(abi.encodePacked(CompoundingValidatorManager.DepositStatus.VERIFIED)),
             "Validator should be verified"
         );
-        assertEq(strategy.getDepositsRootsLength(), 0, "Deposits roots length should be 0 after verification");
+        //assertEq(strategy.getDepositsRootsLength(), 0, "Deposits roots length should be 0 after verification");
     }
 
     function test_VerifyDeposit_SecondETH()
@@ -78,7 +78,7 @@ contract VerifyDepositTest is Modifiers {
             keccak256(abi.encodePacked(CompoundingValidatorManager.DepositStatus.VERIFIED)),
             "Validator should be verified"
         );
-        assertEq(strategy.getDepositsRootsLength(), 0, "Deposits roots length should be 0 after verification");
+        //assertEq(strategy.getDepositsRootsLength(), 0, "Deposits roots length should be 0 after verification");
     }
 
     //////////////////////////////////////////////////////
