@@ -2,7 +2,6 @@
 pragma solidity 0.8.29;
 
 // Test imports
-import { Helpers } from "test/helpers/Helpers.sol";
 import { Modifiers } from "test/unit/Modifiers.sol";
 
 // Origin Dollar
@@ -18,7 +17,7 @@ contract RequestConsolidationTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
         verifyValidator(bytes("publicKey"), 0)
         addSourceRegistry(address(this))
     {
@@ -52,7 +51,7 @@ contract RequestConsolidationTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
         addSourceRegistry(address(this))
     {
         vm.stopPrank();
@@ -64,7 +63,7 @@ contract RequestConsolidationTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
         verifyValidator(bytes("publicKey"), 0)
     {
         vm.stopPrank();
@@ -76,7 +75,7 @@ contract RequestConsolidationTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
         verifyValidator(bytes("publicKey"), 0)
         addSourceRegistry(address(this))
         requestConsolidation(address(this), hashPubKey(bytes("last publicKey")), hashPubKey(bytes("publicKey")))

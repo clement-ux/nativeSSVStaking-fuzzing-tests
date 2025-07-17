@@ -5,6 +5,7 @@ pragma solidity 0.8.29;
 import { Base } from "test/Base.sol";
 
 // Origin Dollar
+import { BeaconOracle } from "@origin-dollar/beacon/BeaconOracle.sol";
 import { InitializableAbstractStrategy } from "@origin-dollar/utils/InitializableAbstractStrategy.sol";
 import { CompoundingStakingSSVStrategy } from
     "@origin-dollar/strategies/NativeStaking/CompoundingStakingSSVStrategy.sol";
@@ -15,9 +16,9 @@ import { WETH } from "@solmate/tokens/WETH.sol";
 
 // Mocks
 import { MockERC20 } from "@solmate/test/utils/mocks/MockERC20.sol";
+import { MockBeaconChain } from "test/mocks/MockBeaconChain.sol";
 import { MockSSVNetwork } from "test/mocks/MockSSVNetwork.sol";
 import { MockBeaconRoots } from "test/mocks/MockBeaconRoots.sol";
-import { MockBeaconOracle } from "test/mocks/MockBeaconOracle.sol";
 import { MockBeaconProofs } from "test/mocks/MockBeaconProofs.sol";
 import { MockDepositContract } from "test/mocks/MockDepositContract.sol";
 import { MockBeaconRootAddress } from "test/mocks/MockBeaconRootAddress.sol";
@@ -34,9 +35,11 @@ import { MockConsolidationStrategy } from "test/mocks/MockConsolidationStrategy.
 ///         5. System initialization and configuration
 ///         No test logic should be implemented here, only setup procedures.
 abstract contract Setup is Base {
+    address public constant BEACON_ROOTS_ADDRESS = 0x000F3df6D732807Ef1319fB7B8bB8522d0Beac02;
     //////////////////////////////////////////////////////
     /// --- SETUP
     //////////////////////////////////////////////////////
+
     function setUp() public virtual {
         // 1. Setup a realistic test environnement.
         _setUpRealisticEnvironnement();
@@ -57,7 +60,7 @@ abstract contract Setup is Base {
     //////////////////////////////////////////////////////
     /// --- ENVIRONMENT
     //////////////////////////////////////////////////////
-    function _setUpRealisticEnvironnement() private {
+    function _setUpRealisticEnvironnement() internal {
         vm.warp(1_800_000_000);
         vm.roll(23_000_000);
     }
@@ -65,7 +68,7 @@ abstract contract Setup is Base {
     //////////////////////////////////////////////////////
     /// --- USERS
     //////////////////////////////////////////////////////
-    function _createUsers() private {
+    function _createUsers() internal {
         // Random users
         alice = makeAddr("Alice");
         bobby = makeAddr("Bobby");
@@ -78,7 +81,7 @@ abstract contract Setup is Base {
     //////////////////////////////////////////////////////
     /// --- EXTERNAL CONTRACTS
     //////////////////////////////////////////////////////
-    function _deployExternal() private {
+    function _deployExternal() internal {
         vm.startPrank(deployer);
 
         // Deploy WETH
@@ -86,15 +89,16 @@ abstract contract Setup is Base {
         ssv = new MockERC20("SSV Network Token", "SSV", 18);
 
         // Deploy mocks
-        mockSSVNetwork = new MockSSVNetwork();
+        mockSsvNetwork = new MockSSVNetwork();
+        mockBeaconChain = new MockBeaconChain();
         mockBeaconRoots = new MockBeaconRoots();
-        mockBeaconOracle = new MockBeaconOracle();
         mockBeaconProofs = new MockBeaconProofs();
         mockDepositContract = new MockDepositContract();
         mockBeaconRootAddress = new MockBeaconRootAddress();
         mockWithdrawalRequest = new MockWithdrawalRequest();
         mockConsolidationStrategy = new MockConsolidationStrategy();
-        vm.etch(0x000F3df6D732807Ef1319fB7B8bB8522d0Beac02, address(mockBeaconRootAddress).code);
+        vm.etch(BEACON_ROOTS_ADDRESS, address(mockBeaconRootAddress).code);
+        mockBeaconRootAddress = MockBeaconRootAddress(BEACON_ROOTS_ADDRESS);
 
         // Mock as addresses
         vault = makeAddr("Vault");
@@ -104,9 +108,9 @@ abstract contract Setup is Base {
         // Label all freshly deployed external contracts
         vm.label(address(weth), "WETH");
         vm.label(address(ssv), "SSV");
-        vm.label(address(mockSSVNetwork), "Mock SSVNetwork");
+        vm.label(address(mockSsvNetwork), "Mock SSVNetwork");
+        vm.label(address(mockBeaconChain), "Mock Beacon Chain");
         vm.label(address(mockBeaconRoots), "Mock Beacon Roots");
-        vm.label(address(mockBeaconOracle), "Mock Beacon Oracle");
         vm.label(address(mockBeaconProofs), "Mock Beacon Proofs");
         vm.label(address(mockDepositContract), "Mock Deposit Contract");
         vm.label(address(mockWithdrawalRequest), "Mock Withdrawal Request");
@@ -117,8 +121,10 @@ abstract contract Setup is Base {
     //////////////////////////////////////////////////////
     /// --- CONTRACTS
     //////////////////////////////////////////////////////
-    function _deployContracts() private {
+    function _deployContracts() internal {
         vm.startPrank(deployer);
+
+        beaconOracle = new BeaconOracle();
 
         // Deploy the Compounding Staking SSV Strategy proxy
         proxy = new CompoundingStakingSSVStrategyProxy();
@@ -128,9 +134,9 @@ abstract contract Setup is Base {
             _baseConfig: InitializableAbstractStrategy.BaseStrategyConfig(address(0), vault),
             _wethAddress: address(weth),
             _ssvToken: address(ssv),
-            _ssvNetwork: address(mockSSVNetwork),
+            _ssvNetwork: address(mockSsvNetwork),
             _beaconChainDepositContract: address(mockDepositContract),
-            _beaconOracle: address(mockBeaconOracle),
+            _beaconOracle: address(beaconOracle),
             _beaconProofs: address(mockBeaconProofs)
         });
 
@@ -153,7 +159,7 @@ abstract contract Setup is Base {
     //////////////////////////////////////////////////////
     /// --- INITIALIZATION
     //////////////////////////////////////////////////////
-    function _initalize() private {
+    function _initalize() internal {
         vm.startPrank(governor);
 
         strategy.setRegistrator(governor);
@@ -162,5 +168,9 @@ abstract contract Setup is Base {
         vm.stopPrank();
 
         vm.deal(address(weth), 1_000_000_000 ether);
+
+        mockBeaconRootAddress.setBeaconChain(address(mockBeaconChain));
+        mockBeaconChain.mine(); // Mine a block to initialize the mock beacon chain
+        mockBeaconChain.mine(); // Mine another block to ensure the chain is ready for tests
     }
 }

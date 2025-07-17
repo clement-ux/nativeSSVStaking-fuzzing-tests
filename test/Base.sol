@@ -9,14 +9,15 @@ import { WETH } from "@solmate/tokens/WETH.sol";
 import { ERC20 } from "@solmate/tokens/ERC20.sol";
 
 // Origin Dollar
+import { BeaconOracle } from "@origin-dollar/beacon/BeaconOracle.sol";
 import { CompoundingStakingSSVStrategy } from
     "@origin-dollar/strategies/NativeStaking/CompoundingStakingSSVStrategy.sol";
 import { CompoundingStakingSSVStrategyProxy } from "@origin-dollar/proxies/Proxies.sol";
 
 // Mocks
 import { MockSSVNetwork } from "test/mocks/MockSSVNetwork.sol";
+import { MockBeaconChain } from "test/mocks/MockBeaconChain.sol";
 import { MockBeaconRoots } from "test/mocks/MockBeaconRoots.sol";
-import { MockBeaconOracle } from "test/mocks/MockBeaconOracle.sol";
 import { MockBeaconProofs } from "test/mocks/MockBeaconProofs.sol";
 import { MockDepositContract } from "test/mocks/MockDepositContract.sol";
 import { MockBeaconRootAddress } from "test/mocks/MockBeaconRootAddress.sol";
@@ -38,13 +39,14 @@ abstract contract Base is Test {
     ERC20 public ssv;
 
     // Origin Dollar contracts
+    BeaconOracle public beaconOracle;
     CompoundingStakingSSVStrategy public strategy;
     CompoundingStakingSSVStrategyProxy public proxy;
 
     // Mocks
-    MockSSVNetwork public mockSSVNetwork;
+    MockSSVNetwork public mockSsvNetwork;
+    MockBeaconChain public mockBeaconChain;
     MockBeaconRoots public mockBeaconRoots;
-    MockBeaconOracle public mockBeaconOracle;
     MockBeaconProofs public mockBeaconProofs;
     MockDepositContract public mockDepositContract;
     MockBeaconRootAddress public mockBeaconRootAddress;

@@ -5,7 +5,7 @@ pragma solidity 0.8.29;
 import { Properties } from "test/Properties.sol";
 
 // Foundry imports
-import { console } from "@forge-std/console.sol";
+//import { console } from "@forge-std/console.sol";
 
 /// @title TargetFunctions
 /// @notice TargetFunctions contract for tests, containing the target functions that should be tested.

@@ -40,8 +40,8 @@ abstract contract Modifiers is Helpers {
         _;
     }
 
-    modifier stakeETH(bytes memory publicKey, uint256 amount) {
-        _stakeETH(publicKey, amount);
+    modifier stakeEth(bytes memory publicKey, uint256 amount) {
+        _stakeEth(publicKey, amount);
         _;
     }
 
@@ -73,7 +73,7 @@ abstract contract Modifiers is Helpers {
         strategy.registerSsvValidator(publicKey, new uint64[](0), bytes(""), 1 ether, Cluster(0, 0, 0, true, 1 ether));
     }
 
-    function _stakeETH(bytes memory publicKey, uint256 amount) internal {
+    function _stakeEth(bytes memory publicKey, uint256 amount) internal {
         deal(address(weth), address(strategy), amount);
         strategy.stakeEth(
             ValidatorStakeData(publicKey, bytes(""), generateDepositDataRoots(publicKey)), (amount / 1 gwei).toUint64()

@@ -4,9 +4,9 @@ pragma solidity 0.8.29;
 contract MockDepositContract {
     function deposit(
         bytes calldata pubkey,
-        bytes calldata withdrawal_credentials,
+        bytes calldata withdrawalCredentials,
         bytes calldata signature,
-        bytes32 deposit_data_root
+        bytes32 depositDataRoot
     ) external payable { }
 
     receive() external payable { }

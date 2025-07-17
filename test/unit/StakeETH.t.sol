@@ -2,7 +2,6 @@
 pragma solidity 0.8.29;
 
 // Test imports
-import { Helpers } from "test/helpers/Helpers.sol";
 import { Modifiers } from "test/unit/Modifiers.sol";
 
 // Origin Dollar
@@ -10,7 +9,7 @@ import { ValidatorStakeData } from "@origin-dollar/strategies/NativeStaking/Comp
 import { CompoundingValidatorManager } from "@origin-dollar/strategies/NativeStaking/CompoundingValidatorManager.sol";
 
 /// @title StakeETHTest
-/// @notice Unit tests for the stakeETH function in CompoundingValidatorManager.
+/// @notice Unit tests for the stakeEth function in CompoundingValidatorManager.
 contract StakeETHTest is Modifiers {
     //////////////////////////////////////////////////////
     /// --- PASSING TESTS
@@ -25,7 +24,7 @@ contract StakeETHTest is Modifiers {
         emit CompoundingValidatorManager.ETHStaked(hashPublicKey, getDepositDataRoots(publicKey, 0), publicKey, amount);
 
         // Main Call
-        _stakeETH(publicKey, amount);
+        _stakeEth(publicKey, amount);
 
         // Fetch useful data
         (
@@ -59,7 +58,7 @@ contract StakeETHTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
         verifyValidator(bytes("publicKey"), 0)
     {
         uint256 amount = 32 ether;
@@ -71,7 +70,7 @@ contract StakeETHTest is Modifiers {
         emit CompoundingValidatorManager.ETHStaked(hashPublicKey, getDepositDataRoots(publicKey, 1), publicKey, amount);
 
         // Main Call
-        _stakeETH(publicKey, amount);
+        _stakeEth(publicKey, amount);
 
         // Fetch useful data
         (
@@ -138,7 +137,7 @@ contract StakeETHTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
         verifyValidator(bytes("publicKey"), 0)
         verifyDeposit(bytes("publicKey"), 0)
     {

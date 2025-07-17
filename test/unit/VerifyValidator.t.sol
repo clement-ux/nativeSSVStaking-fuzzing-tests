@@ -2,7 +2,6 @@
 pragma solidity 0.8.29;
 
 // Test imports
-import { Helpers } from "test/helpers/Helpers.sol";
 import { Modifiers } from "test/unit/Modifiers.sol";
 
 // Origin Dollar
@@ -18,7 +17,7 @@ contract VerifyValidatorTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
     {
         vm.expectEmit(address(strategy));
         emit CompoundingValidatorManager.ValidatorVerified(hashPubKey(bytes("publicKey")), 0);

@@ -2,14 +2,10 @@
 pragma solidity 0.8.29;
 
 // Test imports
-import { Helpers } from "test/helpers/Helpers.sol";
 import { Modifiers } from "test/unit/Modifiers.sol";
 
 // Origin Dollar
 import { CompoundingValidatorManager } from "@origin-dollar/strategies/NativeStaking/CompoundingValidatorManager.sol";
-
-// Mock
-import { MockBeaconOracle } from "test/mocks/MockBeaconOracle.sol";
 
 /// @title VerifyDepositTest
 /// @notice Unit tests for the verifyDeposit function in CompoundingValidatorManager.
@@ -21,7 +17,7 @@ contract VerifyDepositTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
         verifyValidator(bytes("publicKey"), 0)
     {
         // Expected event emission
@@ -57,10 +53,10 @@ contract VerifyDepositTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
         verifyValidator(bytes("publicKey"), 0)
         verifyDeposit(bytes("publicKey"), 0)
-        stakeETH(bytes("publicKey"), 30 ether)
+        stakeEth(bytes("publicKey"), 30 ether)
         verifyDeposit(bytes("publicKey"), 1)
     {
         // Fetch useful data
@@ -105,7 +101,7 @@ contract VerifyDepositTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
         verifyValidator(bytes("publicKey"), 0)
         verifyDeposit(bytes("publicKey"), 0)
     {
@@ -126,7 +122,7 @@ contract VerifyDepositTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
     {
         assertEq(
             keccak256(abi.encodePacked(strategy.validatorState(hashPubKey(bytes("publicKey"))))),
@@ -142,7 +138,7 @@ contract VerifyDepositTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
         verifyValidator(bytes("publicKey"), 0)
     {
         vm.expectRevert("Deposit block before deposit");
@@ -155,12 +151,12 @@ contract VerifyDepositTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
         verifyValidator(bytes("publicKey"), 0)
     {
-        vm.mockCall(
-            address(mockBeaconOracle), MockBeaconOracle.slotToBlock.selector, abi.encode(uint64(block.number + 1))
-        );
+        //vm.mockCall(
+        //    address(mockBeaconOracle), MockBeaconOracle.slotToBlock.selector, abi.encode(uint64(block.number + 1))
+        //);
         vm.expectRevert("Deposit not processed");
         strategy.verifyDeposit(
             getDepositDataRoots(bytes("publicKey"), 0), uint64(block.number + 1), type(uint64).max, 1, bytes("")
@@ -171,12 +167,12 @@ contract VerifyDepositTest is Modifiers {
         public
         asGovernor
         registerValidator(bytes("publicKey"))
-        stakeETH(bytes("publicKey"), 1 ether)
+        stakeEth(bytes("publicKey"), 1 ether)
         verifyValidator(bytes("publicKey"), 0)
     {
-        vm.mockCall(
-            address(mockBeaconOracle), MockBeaconOracle.slotToBlock.selector, abi.encode(uint64(block.number + 1))
-        );
+        //vm.mockCall(
+        //    address(mockBeaconOracle), MockBeaconOracle.slotToBlock.selector, abi.encode(uint64(block.number + 1))
+        //);
         vm.expectRevert("Slot not after deposit");
         strategy.verifyDeposit(
             getDepositDataRoots(bytes("publicKey"), 0), uint64(block.number), uint64(block.number - 1), 0, bytes("")
