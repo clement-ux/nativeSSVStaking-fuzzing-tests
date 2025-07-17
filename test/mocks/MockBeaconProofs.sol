@@ -29,7 +29,7 @@ contract MockBeaconProofs {
         bytes32 pubKeyHash,
         bytes calldata,
         uint64 validatorIndex
-    ) internal view {
+    ) public view {
         require(beaconChain.getBlockByRoot(beaconBlockRoot).validatorPubKeyHashes[validatorIndex] == pubKeyHash);
     }
 
@@ -43,7 +43,7 @@ contract MockBeaconProofs {
         bytes32 beaconBlockRoot,
         bytes32 balancesContainerLeaf,
         bytes calldata balancesContainerProof
-    ) internal view { }
+    ) public view { }
 
     /// @notice Verifies the validator balance against the root of the Balances container
     /// or the beacon block root
@@ -59,7 +59,7 @@ contract MockBeaconProofs {
         bytes calldata,
         uint64 validatorIndex,
         BalanceProofLevel
-    ) internal view returns (uint256 validatorBalance) {
+    ) public view returns (uint256 validatorBalance) {
         return beaconChain.getBlockByRoot(root).validatorBalances[validatorIndex];
     }
 
@@ -70,7 +70,7 @@ contract MockBeaconProofs {
     // @param firstPendingDepositSlotProof The merkle proof for the first pending deposit's slot
     /// against the beacon block root.
     /// This is the witness hashes concatenated together starting from the leaf node.
-    function verifyFirstPendingDepositSlot(bytes32 beaconBlockRoot, uint64, bytes calldata) internal view {
+    function verifyFirstPendingDepositSlot(bytes32 beaconBlockRoot, uint64, bytes calldata) public view {
         require(beaconChain.getBlockByRoot(beaconBlockRoot).pendingDepositsLength == 0, "No pending deposits");
     }
 
@@ -80,7 +80,7 @@ contract MockBeaconProofs {
     /// @param blockNumber The execution layer block number to verify
     // @param blockNumberProof The merkle proof for the block number against the beacon block
     /// This is the witness hashes concatenated together starting from the leaf node.
-    function verifyBlockNumber(bytes32 beaconBlockRoot, uint256 blockNumber, bytes calldata) internal view {
+    function verifyBlockNumber(bytes32 beaconBlockRoot, uint256 blockNumber, bytes calldata) public view {
         require(
             beaconChain.getBlockByNumber(uint64(blockNumber)).data.beaconRoot == beaconBlockRoot,
             "MockBeaconProof: Invalid block number proof"
@@ -93,7 +93,7 @@ contract MockBeaconProofs {
     /// @param slot The beacon chain slot to verify
     // @param  The merkle proof for the slot against the beacon block root.
     /// This is the witness hashes concatenated together starting from the leaf node.
-    function verifySlot(bytes32 beaconBlockRoot, uint256 slot, bytes calldata) internal view {
+    function verifySlot(bytes32 beaconBlockRoot, uint256 slot, bytes calldata) public view {
         require(
             beaconChain.getBlockBySlot(slot).data.beaconRoot == beaconBlockRoot, "MockBeaconProof: Invalid slot proof"
         );
